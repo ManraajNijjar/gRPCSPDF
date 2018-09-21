@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package pdfRequest;
+option go_package="pdfpb";
+
+message PDFSendRequest {
+    bytes Content = 1;
+}
+
+enum UploadStatus {
+    Good = 0;
+    Fail = 1;
+    Done = 2;
+}
+
+message PDFSendResponse {
+    string Message = 1;
+    UploadStatus Code = 2;
+}
+
+service PDFService{
+    rpc SendFile(stream PDFSendRequest) returns (stream PDFSendResponse){
+
+    };
+};
