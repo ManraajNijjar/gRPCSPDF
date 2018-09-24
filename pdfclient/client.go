@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"grpcCourse/pdf/pdfpb"
 	"io"
+	"io/ioutil"
 	"log"
+	"os"
 	"time"
 
 	"google.golang.org/grpc"
@@ -27,6 +29,8 @@ func main() {
 
 func sendFileStream(c pdfpb.PDFServiceClient) {
 
+	f, err := os.Open("/testpdf/test")
+
 	stream, err := c.SendFile(context.Background())
 	if err != nil {
 		log.Fatalf("error creating stream: %v", err)
@@ -34,6 +38,20 @@ func sendFileStream(c pdfpb.PDFServiceClient) {
 
 	waitc := make(chan struct{})
 	go func() {
+		dat, err := ioutil.ReadFile("/testpdf/test")
+		if err != nil {
+			log.Fatalf("error reading file: %v", err)
+		}
+		f, err := os.Open("/testpdf/test")
+		if err != nil {
+			log.Fatalf("error opening file: %v", err)
+		}
+		requests := []*pdfpb.PDFSendRequest{
+			&pdfpb.PDFSendRequest{
+				Content: make([]byte, 2),
+			},
+		}
+
 		for _, req := range requests {
 			fmt.Println("Sending data")
 			stream.Send(req)
